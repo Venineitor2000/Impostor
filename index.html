@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generador de Animales</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: #f5f5f5;
+    }
+
+    h1 {
+      margin-bottom: 40px;
+    }
+
+    #animal {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin-bottom: 30px;
+      transition: opacity 0.3s ease;
+    }
+
+    button {
+      border: none;
+      color: white;
+      font-size: 1rem;
+      padding: 10px 20px;
+      margin: 5px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    #generar {
+      background-color: #007bff; /* Azul */
+    }
+
+    #toggle {
+      background-color: #dc3545; /* Rojo */
+    }
+
+    #toggle.verde {
+      background-color: #28a745; /* Verde */
+    }
+  </style>
+</head>
+<body>
+  <h1>Generador de Animales</h1>
+
+  <div id="animal">Presioná "Generar" para obtener un animal 🐾</div>
+
+  <button id="generar">Generar</button>
+  <button id="toggle">Ocultar</button>
+
+  <script>
+    const textoAnimal = document.getElementById("animal");
+    const btnGenerar = document.getElementById("generar");
+    const btnToggle = document.getElementById("toggle");
+
+    // Lista de animales (podés agregar los que quieras)
+    const animales = [
+  "Abeja",
+  "Águila",
+  "Ajolote",
+  "Alce",
+  "Almeja",
+  "Alpaca",
+  "Anchoa",
+  "Anguila",
+  "Antílope",
+  "Araña",
+  "Ardilla",
+  "Armadillo",
+  "Asno",
+  "Atún",
+  "Avestruz",
+  "Avispa",
+  "Babuino",
+  "Bacalao",
+  "Ballena",
+  "Barracuda",
+  "Beluga",
+  "Bisonte",
+  "Boa",
+  "Búfalo",
+  "Búho",
+  "Buitre",
+  "Burro",
+  "Caballo",
+  "Cabra",
+  "Cachalote",
+  "Caimán",
+  "Calamar",
+  "Camaleón",
+  "Camarón",
+  "Camello",
+  "Canario",
+  "Cangrejo",
+  "Canguro",
+  "Capibara",
+  "Caracol",
+  "Carpa",
+  "Castor",
+  "Cebra",
+  "Cerdo",
+  "Chacal",
+  "Chimpancé",
+  "Chinche",
+  "Chinchilla",
+  "Ciervo",
+  "Ciempiés",
+  "Cigüeña",
+  "Cisne",
+  "Coatí",
+  "Cobaya",
+  "Cobra",
+  "Cocodrilo",
+  "Colibrí",
+  "Cóndor",
+  "Conejo",
+  "Coral",
+  "Coyote",
+  "Cuervo",
+  "Cucaracha",
+  "Delfín",
+  "Diablo de Tasmania",
+  "Dragón de Komodo",
+  "Elefante",
+  "Erizo",
+  "Erizo de mar",
+  "Escarabajo",
+  "Escorpión",
+  "Estrella de mar",
+  "Flamenco",
+  "Foca",
+  "Gacela",
+  "Gallina",
+  "Gallo",
+  "Gamba",
+  "Ganso",
+  "Garza",
+  "Gato",
+  "Gaviota",
+  "Gecko",
+  "Guepardo",
+  "Golondrina",
+  "Gorila",
+  "Gorrión",
+  "Grillo",
+  "Guanaco",
+  "Guacamayo",
+  "Halcón",
+  "Hamster",
+  "Hiena",
+  "Hipopótamo",
+  "Hormiga",
+  "Hurón",
+  "Iguana",
+  "Jabalí",
+  "Jaguar",
+  "Jirafa",
+  "Kiwi",
+  "Koala",
+  "Lagarto",
+  "Langosta",
+  "Lechuza",
+  "Lémur",
+  "León",
+  "León marino",
+  "Leopardo",
+  "Libélula",
+  "Liebre",
+  "Llama",
+  "Lobo",
+  "Lombriz",
+  "Loro",
+  "Macaco",
+  "Mandril",
+  "Manatí",
+  "Mantis",
+  "Mapache",
+  "Mariquita",
+  "Marmota",
+  "Martín pescador",
+  "Medusa",
+  "Mejillón",
+  "Milpiés",
+  "Mono",
+  "Morsa",
+  "Mosca",
+  "Mosquito",
+  "Mula",
+  "Murciélago",
+  "Musaraña",
+  "Narval",
+  "Nutria",
+  "Ñandú",
+  "Orangután",
+  "Orca",
+  "Ornitorrinco",
+  "Oso",
+  "Ostra",
+  "Oveja",
+  "Pájaro carpintero",
+  "Paloma",
+  "Panda",
+  "Pantera",
+  "Papagayo",
+  "Pato",
+  "Pavo",
+  "Pavo real",
+  "Pelícano",
+  "Perezoso",
+  "Perro",
+  "Pez dorado",
+  "Pez espada",
+  "Pez globo",
+  "Pez payaso",
+  "Pingüino",
+  "Piojo",
+  "Piraña",
+  "Pitón",
+  "Polilla",
+  "Pulga",
+  "Pulpo",
+  "Puma",
+  "Puercoespín",
+  "Rana",
+  "Rata",
+  "Ratón",
+  "Raya",
+  "Reno",
+  "Rinoceronte",
+  "Ruiseñor",
+  "Salamandra",
+  "Salmón",
+  "Saltamontes",
+  "Sanguijuela",
+  "Sapo",
+  "Sardina",
+  "Serpiente",
+  "Suricata",
+  "Tarántula",
+  "Tejón",
+  "Termita",
+  "Tiburón",
+  "Tigre",
+  "Topo",
+  "Toro",
+  "Tortuga",
+  "Tritón",
+  "Trucha",
+  "Tucán",
+  "Urraca",
+  "Vaca",
+  "Víbora",
+  "Zarigüeya",
+  "Zorro"
+];
+
+    // Botón Generar
+    btnGenerar.addEventListener("click", () => {
+      const randomIndex = Math.floor(Math.random() * animales.length);
+      const animal = animales[randomIndex];
+      textoAnimal.textContent = animal;
+    });
+
+    // Botón Ocultar / Mostrar
+    btnToggle.addEventListener("click", () => {
+      const oculto = textoAnimal.style.display === "none";
+      if (oculto) {
+        textoAnimal.style.display = "block";
+        btnToggle.textContent = "Ocultar";
+        btnToggle.classList.remove("verde");
+      } else {
+        textoAnimal.style.display = "none";
+        btnToggle.textContent = "Mostrar";
+        btnToggle.classList.add("verde");
+      }
+    });
+  </script>
+</body>
+</html>
