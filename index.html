@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Generador de Animales</title>
+  <title>Juego del Impostor Animal</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -13,17 +13,29 @@
       justify-content: center;
       height: 100vh;
       background: #f5f5f5;
+      text-align: center;
     }
 
     h1 {
-      margin-bottom: 40px;
+      margin-bottom: 20px;
     }
 
-    #animal {
-      font-size: 1.8rem;
-      font-weight: bold;
-      margin-bottom: 30px;
-      transition: opacity 0.3s ease;
+    #setup, #juego, #final {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #setup.active,
+    #juego.active,
+    #final.active {
+      display: flex;
+    }
+
+    #contadorJugadores {
+      font-size: 1.5rem;
+      margin: 10px;
     }
 
     button {
@@ -37,34 +49,74 @@
       transition: background-color 0.3s ease;
     }
 
+    #mas, #menos {
+      background-color: #007bff;
+    }
+
+    #comenzar {
+      background-color: #28a745;
+      margin-top: 15px;
+    }
+
     #generar {
-      background-color: #007bff; /* Azul */
+      background-color: #007bff;
     }
 
-    #toggle {
-      background-color: #dc3545; /* Rojo */
+    #terminar {
+      background-color: #dc3545;
     }
 
-    #toggle.verde {
-      background-color: #28a745; /* Verde */
+    #recordar {
+      background-color: #ffc107;
+      color: black;
+    }
+
+    #mensaje {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin: 20px;
+      min-height: 2em;
+    }
+
+    #turnoJugador {
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
-  <h1>Generador de Animales</h1>
+  <h1>Juego del Impostor Animal 🐾</h1>
 
-  <div id="animal">Presioná "Generar" para obtener un animal 🐾</div>
+  <!-- SECCIÓN CONFIGURACIÓN -->
+  <div id="setup" class="active">
+    <div id="textoJugadores">Cantidad jugadores: <span id="contadorJugadores">3</span></div>
+    <div>
+      <button id="menos">-</button>
+      <button id="mas">+</button>
+    </div>
+    <button id="comenzar">Comenzar</button>
+  </div>
 
-  <button id="generar">Generar</button>
-  <button id="toggle">Ocultar</button>
+  <!-- SECCIÓN JUEGO -->
+  <div id="juego">
+    <div id="turnoJugador"></div>
+    <div id="mensaje"></div>
+    <div>
+      <button id="generar">Generar</button>
+      <button id="terminar">Terminar turno</button>
+    </div>
+  </div>
+
+  <!-- SECCIÓN FINAL -->
+  <div id="final">
+    <div id="finMensaje">Todos los roles asignados</div>
+    <button id="recordar">Recordame la palabra</button>
+    <div id="animalRecordado" style="margin-top:10px; font-size:1.5rem; font-weight:bold;"></div>
+  </div>
 
   <script>
-    const textoAnimal = document.getElementById("animal");
-    const btnGenerar = document.getElementById("generar");
-    const btnToggle = document.getElementById("toggle");
-
-    // Lista de animales (podés agregar los que quieras)
-    const animales = [
+        const animales = [
   "Abeja",
   "Águila",
   "Ajolote",
@@ -264,25 +316,92 @@
   "Zorro"
 ];
 
-    // Botón Generar
-    btnGenerar.addEventListener("click", () => {
-      const randomIndex = Math.floor(Math.random() * animales.length);
-      const animal = animales[randomIndex];
-      textoAnimal.textContent = animal;
+    // Elementos del DOM
+    const setupDiv = document.getElementById("setup");
+    const juegoDiv = document.getElementById("juego");
+    const finalDiv = document.getElementById("final");
+    const contador = document.getElementById("contadorJugadores");
+    const btnMas = document.getElementById("mas");
+    const btnMenos = document.getElementById("menos");
+    const btnComenzar = document.getElementById("comenzar");
+    const btnGenerar = document.getElementById("generar");
+    const btnTerminar = document.getElementById("terminar");
+    const btnRecordar = document.getElementById("recordar");
+    const mensaje = document.getElementById("mensaje");
+    const turnoJugador = document.getElementById("turnoJugador");
+    const animalRecordado = document.getElementById("animalRecordado");
+
+    // Variables de juego
+    let cantidadJugadores = 3;
+    let animalElegido = "";
+    let numeroImpostor = 0;
+    let contadorTurnos = 0;
+    let jugadorActualMostrado = false;
+
+    // Ajustar cantidad de jugadores
+    btnMas.addEventListener("click", () => {
+      cantidadJugadores++;
+      contador.textContent = cantidadJugadores;
     });
 
-    // Botón Ocultar / Mostrar
-    btnToggle.addEventListener("click", () => {
-      const oculto = textoAnimal.style.display === "none";
-      if (oculto) {
-        textoAnimal.style.display = "block";
-        btnToggle.textContent = "Ocultar";
-        btnToggle.classList.remove("verde");
-      } else {
-        textoAnimal.style.display = "none";
-        btnToggle.textContent = "Mostrar";
-        btnToggle.classList.add("verde");
+    btnMenos.addEventListener("click", () => {
+      if (cantidadJugadores > 1) {
+        cantidadJugadores--;
+        contador.textContent = cantidadJugadores;
       }
+    });
+
+    // Comenzar juego
+    btnComenzar.addEventListener("click", () => {
+      const randomIndex = Math.floor(Math.random() * animales.length);
+      animalElegido = animales[randomIndex];
+      numeroImpostor = Math.floor(Math.random() * cantidadJugadores) + 1;
+      contadorTurnos = 0;
+      jugadorActualMostrado = false;
+
+      setupDiv.classList.remove("active");
+      juegoDiv.classList.add("active");
+      actualizarTurno();
+    });
+
+    // Mostrar el turno actual
+    function actualizarTurno() {
+      turnoJugador.textContent = `Jugador ${contadorTurnos + 1}`;
+    }
+
+    // Botón Generar
+    btnGenerar.addEventListener("click", () => {
+      if (jugadorActualMostrado) return;
+      jugadorActualMostrado = true;
+
+      if (contadorTurnos + 1 === numeroImpostor) {
+        mensaje.textContent = "Impostor 🕵️‍♂️";
+      } else {
+        mensaje.textContent = animalElegido;
+      }
+    });
+
+    // Botón Terminar turno
+    btnTerminar.addEventListener("click", () => {
+      if (!jugadorActualMostrado) return;
+      jugadorActualMostrado = false;
+      mensaje.textContent = "";
+
+      contadorTurnos++;
+
+      if (contadorTurnos >= cantidadJugadores) {
+        // Juego terminado
+        juegoDiv.classList.remove("active");
+        finalDiv.classList.add("active");
+      } else {
+        // Actualizar número de jugador
+        actualizarTurno();
+      }
+    });
+
+    // Recordar palabra final
+    btnRecordar.addEventListener("click", () => {
+      animalRecordado.textContent = "La palabra era: " + animalElegido;
     });
   </script>
 </body>
